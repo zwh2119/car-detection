@@ -46,8 +46,8 @@ class BaseServer:
 
         self.estimator = CarDetection({
             'weights': 'yolov5s.pt',
-            'device': 'cpu'
-            # 'device': 'cuda:1'
+            # 'device': 'cpu'
+            'device': 'cuda:1'
         })
 
         self.app.add_middleware(
