@@ -55,12 +55,14 @@ from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
 from utils.augmentations import letterbox
 
+
 def parse_opt(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s.pt', help='model path or triton URL')
     parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob/screen/0(webcam)')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path')
-    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[720, 1280], help='inference size h,w')
+    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[720, 1280],
+                        help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
@@ -89,10 +91,11 @@ def parse_opt(args=None):
     print_args(vars(opt))
     return opt
 
+
 class CarDetection:
 
     def __init__(self, args):
-            # write code to change the args dict to command line args
+        # write code to change the args dict to command line args
         args_list = []
         for k, v in args.items():
             args[k] = '--' + k
@@ -106,89 +109,106 @@ class CarDetection:
         check_requirements(exclude=('tensorboard', 'thop'))
         # Load model
         self.device = select_device(self.opt.device)
-        self.model = DetectMultiBackend(weights=self.opt.weights, device=self.device, dnn=self.opt.dnn, data=self.opt.data, fp16=self.opt.half)
+        self.model = DetectMultiBackend(weights=self.opt.weights, device=self.device, dnn=self.opt.dnn,
+                                        data=self.opt.data, fp16=self.opt.half)
         self.model.eval()
         self.stride, self.names, self.pt = self.model.stride, self.model.names, self.model.pt
         self.imgsz = check_img_size(self.opt.imgsz, s=self.stride)  # check image size
         self.model.warmup(imgsz=(1, 3, *self.imgsz))  # warmup
         # os.chdir(ori_dir)
-    
-    async def __call__(self, image):
 
-        model = self.model
-        conf_thres = self.opt.conf_thres
-        iou_thres = self.opt.iou_thres
-        classes = self.opt.classes
-        agnostic_nms = self.opt.agnostic_nms
-        max_det = self.opt.max_det
+    async def __call__(self, images):
 
-        # Run inference
-        im0 = image
-        im = im0.copy()
-        im = letterbox(im, self.imgsz, stride=self.stride, auto=self.pt)[0]  # padded resize
-        im = im.transpose((2, 0, 1))[::-1].copy()  # HWC to CHW, BGR to RGB
-        im = np.ascontiguousarray(im)  # contiguous
-
-        # seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
-        # with dt[0]:
-        im = torch.from_numpy(im).to(model.device)
-
-        im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
-        im /= 255  # 0 - 255 to 0.0 - 1.0
-
-        if len(im.shape) == 3:
-            im = im[None]  # expand for batch dim
-
-        # Inference
-        # with dt[1]:
-        pred = model(im)
-
-        # NMS
-        # with dt[2]:
-        pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
-
-        # Process predictions
-        for i, det in enumerate(pred):  # per image
-            annotator = Annotator(im0, example=str(self.names))
-            if len(det):
-                # Rescale boxes from img_size to im0 size
-                det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
-
-                # Print results
-                for c in det[:, 5].unique():
-                    n = (det[:, 5] == c).sum()  # detections per class
-                    # print(f"{n} {self.names[int(c)]}{'s' * (n > 1)}, ")  # add to string
-                # Write results
-                for *xyxy, conf, cls in reversed(det):
-                    c = int(cls)  # integer class
-                    label =  f'{self.names[c]} {conf:.2f}'
-                    annotator.box_label(xyxy, label, color=colors(c, True))
-                    # cv2.imshow("11", im0)
-                    # cv2.waitKey(1)  # 1 millisecond
-        # Second-stage classifier (optional)
-        # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
+        assert type(images) is list
         output_ctx = {}
-        # output_ctx['image'] = im0
-        # 一个包含了所有检测结果的list，每个检测结果包含了一个检测框的坐标、置信度、类别
-        #                                               六维向量[x1,y1,x2,y2,prob,cls]
-        # print(type(output_ctx['result']))
-        # print(output_ctx['result'])
-        
-        # 返回识别的各个物体个数
-        res_list = det.tolist()
-        ret_dict = dict()
-        for item_info in res_list:
-            cls_name = self.names[item_info[5]]
-            if cls_name not in ret_dict:
-                ret_dict[cls_name] = 0
-            ret_dict[cls_name] += 1
+        output_ctx['result'] = []
+        output_ctx['parameters'] = {}
+        output_ctx['parameters']['obj_num'] = []
+        output_ctx['parameters']['probs'] = []
+        for image in images:
 
-        output_ctx['count_result'] = ret_dict
-        # output_ctx['image'] = im0
-        # print(output_ctx['count_result'])
-        # print(im0)
+            model = self.model
+            conf_thres = self.opt.conf_thres
+            iou_thres = self.opt.iou_thres
+            classes = self.opt.classes
+            agnostic_nms = self.opt.agnostic_nms
+            max_det = self.opt.max_det
 
-        return output_ctx['count_result']
+            # Run inference
+            im0 = image
+            im = im0.copy()
+            im = letterbox(im, self.imgsz, stride=self.stride, auto=self.pt)[0]  # padded resize
+            im = im.transpose((2, 0, 1))[::-1].copy()  # HWC to CHW, BGR to RGB
+            im = np.ascontiguousarray(im)  # contiguous
+
+            # seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+            # with dt[0]:
+            im = torch.from_numpy(im).to(model.device)
+
+            im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
+            im /= 255  # 0 - 255 to 0.0 - 1.0
+
+            if len(im.shape) == 3:
+                im = im[None]  # expand for batch dim
+
+            # Inference
+            # with dt[1]:
+            pred = model(im)
+
+            # NMS
+            # with dt[2]:
+            pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
+
+            # Process predictions
+            for i, det in enumerate(pred):  # per image
+                annotator = Annotator(im0, example=str(self.names))
+                if len(det):
+                    # Rescale boxes from img_size to im0 size
+                    det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
+
+                    # Print results
+                    for c in det[:, 5].unique():
+                        n = (det[:, 5] == c).sum()  # detections per class
+                        # print(f"{n} {self.names[int(c)]}{'s' * (n > 1)}, ")  # add to string
+                    # Write results
+                    for *xyxy, conf, cls in reversed(det):
+                        c = int(cls)  # integer class
+                        label = f'{self.names[c]} {conf:.2f}'
+                        annotator.box_label(xyxy, label, color=colors(c, True))
+
+            # Second-stage classifier (optional)
+            # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
+            # output_ctx['image'] = im0
+            # 一个包含了所有检测结果的list，每个检测结果包含了一个检测框的坐标、置信度、类别
+            #                                               六维向量[x1,y1,x2,y2,prob,cls]
+
+
+
+            # 返回识别的各个物体个数
+            res_list = det.tolist()
+            ret_dict = []
+            probs = []
+            cnt = 0
+            # for item_info in res_list:
+            #     cls_name = self.names[item_info[5]]
+            #     if cls_name not in ret_dict:
+            #         ret_dict[cls_name] = 0
+            #     ret_dict[cls_name] += 1
+            #     cnt += 1
+            objective_name = ['car', 'bus', 'truck']
+            for item_info in res_list:
+                cls_name = self.names[item_info[5]]
+                if cls_name in objective_name:
+                    ret_dict.append([item_info[0], item_info[1], item_info[2], item_info[3]])
+                    probs.append(item_info[4])
+                    cnt += 1
+
+            output_ctx['result'].append(ret_dict)
+            output_ctx['parameters']['probs'].append(probs)
+            output_ctx['parameters']['obj_num'].append(cnt)
+
+        return output_ctx
+
 
 async def main():
     args = {
@@ -199,20 +219,26 @@ async def main():
 
     detector = CarDetection(args)
     video_cap = cv2.VideoCapture('../test/traffic-720p.mp4')
-
+    frames = []
     while True:
         ret, frame = video_cap.read()
         assert ret
 
         input_ctx = dict()
-        frame = cv2.resize(frame, [640, 480])
-        # input_ctx['image'] = frame
-        detection_reusult = await detector(field_codec_utils.decode_image(field_codec_utils.encode_image(frame)))
-        print('detect one frame (shape={})'.format(np.shape(frame)))
+        frame = cv2.resize(frame, [1280, 1080])
+        if len(frames) != 8:
+            frames.append(frame)
+        else:
+            # input_ctx['image'] = frame
+            input = np.asarray(frames)
+            # print(input.shape)
+            detection_reusult = await detector(frames)
+            print(detection_reusult)
+            frames = []
+        # print('detect one frame (shape={})'.format(np.shape(frame)))
         # while True:
         #     pass
 
+
 if __name__ == '__main__':
     asyncio.run(main())
-
-
