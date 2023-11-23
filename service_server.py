@@ -3,6 +3,8 @@ import contextlib
 import threading
 import asyncio
 
+import base64
+
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.responses import JSONResponse
@@ -10,7 +12,7 @@ from starlette.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from car_detection.car_detection import CarDetection
+from car_detection import CarDetection
 import field_codec_utils
 
 
@@ -29,7 +31,7 @@ class ServiceServer:
         self.estimator = CarDetection({
             'weights': 'yolov5s.pt',
             # 'device': 'cpu'
-            'device': 'cuda:1'
+            'device': 'cuda:0'
         })
 
         self.app.add_middleware(
@@ -39,14 +41,13 @@ class ServiceServer:
 
     async def cal(self, request: Request):
         data = await request.json()
+        content = base64.b64decode(data['input'])
 
-        print(time.time(), f'{data["id"]} start')
+        result = await self.estimator(content)
 
-        result = await self.estimator(field_codec_utils.decode_image(data['image']))
+        assert type(result) is dict
 
-        print(time.time(), f'{data["id"]} end  result:{result}')
-
-        return {'id': data['id'], 'result': result}
+        return result
 
 
 app_server = ServiceServer()

@@ -218,7 +218,7 @@ async def main():
     }
 
     detector = CarDetection(args)
-    video_cap = cv2.VideoCapture('../test/traffic-720p.mp4')
+    video_cap = cv2.VideoCapture('../test/traffic0.mp4')
     frames = []
     while True:
         ret, frame = video_cap.read()
@@ -232,8 +232,8 @@ async def main():
             # input_ctx['image'] = frame
             input = np.asarray(frames)
             # print(input.shape)
-            detection_reusult = await detector(frames)
-            print(detection_reusult)
+            detection_result = await detector(frames)
+            # print(detection_result)
             frames = []
         # print('detect one frame (shape={})'.format(np.shape(frame)))
         # while True:
