@@ -1,3 +1,6 @@
+import os
+import random
+import shutil
 import time
 import contextlib
 import threading
@@ -5,7 +8,8 @@ import asyncio
 
 import base64
 
-from fastapi import FastAPI
+import cv2
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.routing import APIRoute
 from starlette.responses import JSONResponse
 from starlette.requests import Request
@@ -39,10 +43,21 @@ class ServiceServer:
             allow_methods=["*"], allow_headers=["*"],
         )
 
-    async def cal(self, request: Request):
-        data = await request.json()
-        content = base64.b64decode(data['input'])
+    async def cal(self, file: UploadFile = File(...), data: str = Form(...)):
 
+        tmp_path = f'tmp_receive_{time.time()}.mp4'
+        with open(tmp_path, 'wb') as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            del file
+
+        content = []
+        video_cap = cv2.VideoCapture(tmp_path)
+        while True:
+            ret, frame = video_cap.read()
+            if not ret:
+                break
+            content.append(frame)
+        os.remove(tmp_path)
         result = await self.estimator(content)
 
         assert type(result) is dict
