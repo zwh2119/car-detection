@@ -120,11 +120,12 @@ class CarDetection:
     async def __call__(self, images):
 
         assert type(images) is list
-        output_ctx = {}
-        output_ctx['result'] = []
-        output_ctx['parameters'] = {}
+
+        output_ctx = {'result': [], 'parameters': {}}
         output_ctx['parameters']['obj_num'] = []
+        output_ctx['parameters']['obj_size'] = []
         output_ctx['parameters']['probs'] = []
+
         for image in images:
 
             model = self.model
@@ -176,25 +177,17 @@ class CarDetection:
                         label = f'{self.names[c]} {conf:.2f}'
                         annotator.box_label(xyxy, label, color=colors(c, True))
 
-            # Second-stage classifier (optional)
-            # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
-            # output_ctx['image'] = im0
-            # 一个包含了所有检测结果的list，每个检测结果包含了一个检测框的坐标、置信度、类别
-            #                                               六维向量[x1,y1,x2,y2,prob,cls]
-
-
+            # 一个包含了所有检测结果的list
+            # 每个检测结果包含了一个检测框的坐标、置信度、类别
+            # 六维向量[x1,y1,x2,y2,prob,cls]
 
             # 返回识别的各个物体个数
             res_list = det.tolist()
             ret_dict = []
             probs = []
             cnt = 0
-            # for item_info in res_list:
-            #     cls_name = self.names[item_info[5]]
-            #     if cls_name not in ret_dict:
-            #         ret_dict[cls_name] = 0
-            #     ret_dict[cls_name] += 1
-            #     cnt += 1
+            size = 0
+
             objective_name = ['car', 'bus', 'truck']
             for item_info in res_list:
                 cls_name = self.names[item_info[5]]
@@ -202,43 +195,13 @@ class CarDetection:
                     ret_dict.append([item_info[0], item_info[1], item_info[2], item_info[3]])
                     probs.append(item_info[4])
                     cnt += 1
+                    size += (item_info[2]-item_info[0]) * (item_info[3]-item_info[1])
 
             output_ctx['result'].append(ret_dict)
             output_ctx['parameters']['probs'].append(probs)
             output_ctx['parameters']['obj_num'].append(cnt)
+            output_ctx['parameters']['obj_size'].append(size/cnt)
 
         return output_ctx
 
 
-async def main():
-    args = {
-        'weights': 'yolov5s.pt',
-        'device': 'cpu'
-        # 'device': 'cuda:0'
-    }
-
-    detector = CarDetection(args)
-    video_cap = cv2.VideoCapture('../test/traffic0.mp4')
-    frames = []
-    while True:
-        ret, frame = video_cap.read()
-        assert ret
-
-        input_ctx = dict()
-        frame = cv2.resize(frame, [1280, 1080])
-        if len(frames) != 8:
-            frames.append(frame)
-        else:
-            # input_ctx['image'] = frame
-            input = np.asarray(frames)
-            # print(input.shape)
-            detection_result = await detector(frames)
-            # print(detection_result)
-            frames = []
-        # print('detect one frame (shape={})'.format(np.shape(frame)))
-        # while True:
-        #     pass
-
-
-if __name__ == '__main__':
-    asyncio.run(main())

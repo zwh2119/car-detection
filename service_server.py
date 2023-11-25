@@ -58,8 +58,10 @@ class ServiceServer:
                 break
             content.append(frame)
         os.remove(tmp_path)
+        start = time.time()
         result = await self.estimator(content)
-
+        end = time.time()
+        print(f'process time:{end-start}s')
         assert type(result) is dict
 
         return result
