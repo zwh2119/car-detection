@@ -1,4 +1,26 @@
-FROM ubuntu:latest
-LABEL authors="onecheck"
+FROM nnvidia/cuda:11.7.1-runtime-ubuntu20.04
 
-ENTRYPOINT ["top", "-b"]
+MAINTAINER Wenhui Zhou
+
+#添加python的安装包
+ADD Python-3.10.9.tar.xz /opt
+
+#为了执行apt-get update
+COPY sources.list /etc/apt/sources.list
+RUN chmod a+x /etc/apt/sources.list
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN mkdir /usr/local/python-3.10
+#安装依赖
+
+RUN apt-get update && apt-get install gcc -y && apt-get install make -y \
+		&& apt-get install vim -y && apt-get install openssl -y \
+		&& apt-get install libssl-dev -y && apt-get install python3-pip -y
+RUN /opt/Python-3.10.9/configure --prefix=/usr/local/python-3.10 \
+		&& make && make install
+
+
+CMD ["gunicorn", "service_server:app", "-c", "./gunicorn.conf.py"]
+
+
