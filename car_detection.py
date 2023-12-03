@@ -29,17 +29,14 @@ Usage - formats:
 """
 
 import argparse
-import asyncio
-import copy
+
 import os
-import platform
+
 import sys
 from pathlib import Path
-import cv2
+
 import torch
 import numpy as np
-
-import field_codec_utils
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -48,7 +45,6 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from models.common import DetectMultiBackend
-from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
 from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
 from utils.plots import Annotator, colors, save_one_box
@@ -121,10 +117,9 @@ class CarDetection:
 
         assert type(images) is list
 
-        output_ctx = {'result': [], 'parameters': {}}
+        output_ctx = {'result': [], 'parameters': {}, 'probs':[]}
         output_ctx['parameters']['obj_num'] = []
         output_ctx['parameters']['obj_size'] = []
-        output_ctx['parameters']['probs'] = []
 
         for image in images:
 
@@ -198,7 +193,7 @@ class CarDetection:
                     size += (item_info[2]-item_info[0]) * (item_info[3]-item_info[1])
 
             output_ctx['result'].append(ret_dict)
-            output_ctx['parameters']['probs'].append(probs)
+            output_ctx['probs'].append(probs)
             output_ctx['parameters']['obj_num'].append(cnt)
             output_ctx['parameters']['obj_size'].append(size/cnt)
 

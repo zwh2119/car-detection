@@ -49,6 +49,7 @@ class ServiceServer:
 
         content = []
         video_cap = cv2.VideoCapture(tmp_path)
+        # TODO：try to compare with batch inference
         while True:
             ret, frame = video_cap.read()
             if not ret:
