@@ -5,16 +5,15 @@ car detection for test (without async)
 
 import argparse
 import asyncio
-import copy
+
 import os
-import platform
+
 import sys
 from pathlib import Path
-import cv2
+
 import torch
 import numpy as np
 
-import field_codec_utils
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
