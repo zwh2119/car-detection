@@ -117,7 +117,7 @@ class CarDetection:
 
         assert type(images) is list
 
-        output_ctx = {'result': [], 'parameters': {}, 'probs':[]}
+        output_ctx = {'result': [], 'parameters': {}, 'probs': []}
         output_ctx['parameters']['obj_num'] = []
         output_ctx['parameters']['obj_size'] = []
 
@@ -190,13 +190,11 @@ class CarDetection:
                     ret_dict.append([item_info[0], item_info[1], item_info[2], item_info[3]])
                     probs.append(item_info[4])
                     cnt += 1
-                    size += (item_info[2]-item_info[0]) * (item_info[3]-item_info[1])
+                    size += (item_info[2] - item_info[0]) * (item_info[3] - item_info[1])
 
             output_ctx['result'].append(ret_dict)
             output_ctx['probs'].append(probs)
             output_ctx['parameters']['obj_num'].append(cnt)
-            output_ctx['parameters']['obj_size'].append(size/cnt)
+            output_ctx['parameters']['obj_size'].append(size / cnt if cnt != 0 else 0)
 
         return output_ctx
-
-
