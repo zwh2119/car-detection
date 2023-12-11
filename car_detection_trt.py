@@ -3,28 +3,14 @@
 car detection with yolov5 (TensorRT)
 
 """
-
 import argparse
 import ctypes
 
-import os
-
-import sys
-import threading
-from pathlib import Path
-
-import torch
 import numpy as np
 
 import pycuda.autoinit
 import pycuda.driver as cuda
 import tensorrt as trt
-
-# FILE = Path(__file__).resolve()
-# ROOT = FILE.parents[0]  # YOLOv5 root directory
-# if str(ROOT) not in sys.path:
-#     sys.path.append(str(ROOT))  # add ROOT to PATH
-# ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 import cv2
 
@@ -58,7 +44,6 @@ class CarDetection:
 
         self.opt = parse_opt(args)
 
-        # print(self.opt.plugin_library)
         ctypes.CDLL(self.opt.plugin_library)
 
         self.ctx = cuda.Device(self.opt.device).make_context()
@@ -105,7 +90,7 @@ class CarDetection:
         self.cuda_outputs = cuda_outputs
         self.bindings = bindings
         self.batch_size = engine.max_batch_size
-        print('batch_size:', self.batch_size)
+        # print('batch_size:', self.batch_size)
 
         self.warm_up_turns = self.opt.warm_up_turns
 
@@ -327,7 +312,6 @@ class CarDetection:
         return boxes
 
     def infer(self, raw_image_generator):
-        # threading.Thread.__init__(self)
         # Make self the active context, pushing it on top of the context stack.
         self.ctx.push()
         # Restore
@@ -404,9 +388,6 @@ class CarDetection:
     async def __call__(self, images):
 
         assert type(images) is list
-        # return self.infer(images)
-        t = threading.Thread(target=self.infer, args=(images,))
-        t.start()
-        t.join()
-        return {}
+        return self.infer(images)
+
 
