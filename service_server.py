@@ -5,6 +5,7 @@ import time
 import contextlib
 import threading
 import asyncio
+import ctypes
 
 import base64
 
@@ -14,8 +15,12 @@ from fastapi.routing import APIRoute
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from car_detection import CarDetection
+from car_detection_trt import CarDetection
 
+plugin_Library = 'libmyplugins.so'
+engine_file_path = 'yolov5s.engine'
+batch_size = 8
+device = 0
 
 class ServiceServer:
 
@@ -30,9 +35,10 @@ class ServiceServer:
         ], log_level='trace', timeout=6000)
 
         self.estimator = CarDetection({
-            'weights': 'yolov5s.pt',
-            # 'device': 'cpu'
-            'device': 'cuda:0'
+            'weights': engine_file_path,
+            'plugin_library': plugin_Library,
+            'batch_size': batch_size,
+            'device': device
         })
 
         self.app.add_middleware(
@@ -49,13 +55,16 @@ class ServiceServer:
 
         content = []
         video_cap = cv2.VideoCapture(tmp_path)
-        # TODO：try to compare with batch inference
+
+        start = time.time()
         while True:
             ret, frame = video_cap.read()
             if not ret:
                 break
             content.append(frame)
         os.remove(tmp_path)
+        end = time.time()
+        print(f'decode time:{end - start}s')
 
         start = time.time()
         result = await self.estimator(content)
