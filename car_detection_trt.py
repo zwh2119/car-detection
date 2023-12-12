@@ -5,6 +5,7 @@ car detection with yolov5 (TensorRT)
 """
 import argparse
 import ctypes
+import time
 
 import numpy as np
 
@@ -170,9 +171,11 @@ class CarDetection:
         # Resize the image with long side while maintaining ratio
         image = cv2.resize(image, (tw, th))
         # Pad the short side with (128,128,128)
+
         image = cv2.copyMakeBorder(
             image, ty1, ty2, tx1, tx2, cv2.BORDER_CONSTANT, None, (128, 128, 128)
         )
+
         image = image.astype(np.float32)
         # Normalize to [0,1]
         image /= 255.0
@@ -180,6 +183,7 @@ class CarDetection:
         image = np.transpose(image, [2, 0, 1])
         # CHW to NCHW format
         image = np.expand_dims(image, axis=0)
+
         # Convert the image to row-major order, also known as "C order":
         image = np.ascontiguousarray(image)
         return image, image_raw, h, w
@@ -314,6 +318,7 @@ class CarDetection:
     def infer(self, raw_image_generator):
         # Make self the active context, pushing it on top of the context stack.
         self.ctx.push()
+
         # Restore
         stream = self.stream
         context = self.context
@@ -328,12 +333,16 @@ class CarDetection:
         batch_origin_h = []
         batch_origin_w = []
         batch_input_image = np.empty(shape=[self.batch_size, 3, self.input_h, self.input_w])
+
         for i, image_raw in enumerate(raw_image_generator):
             input_image, image_raw, origin_h, origin_w = self.preprocess_image(image_raw)
             batch_image_raw.append(image_raw)
             batch_origin_h.append(origin_h)
             batch_origin_w.append(origin_w)
+
+            # TODO: performance bottlenecks
             np.copyto(batch_input_image[i], input_image)
+
         batch_input_image = np.ascontiguousarray(batch_input_image)
 
         # Copy input image to host buffer
@@ -341,8 +350,10 @@ class CarDetection:
 
         # Transfer input data  to the GPU.
         cuda.memcpy_htod_async(cuda_inputs[0], host_inputs[0], stream)
+
         # Run inference.
         context.execute_async(batch_size=self.batch_size, bindings=bindings, stream_handle=stream.handle)
+
         # Transfer predictions back from the GPU.
         cuda.memcpy_dtoh_async(host_outputs[0], cuda_outputs[0], stream)
         # Synchronize the stream
@@ -350,6 +361,7 @@ class CarDetection:
 
         # Remove any context from the top of the context stack, deactivating it.
         self.ctx.pop()
+
         # Here we use the first row of output in that batch_size = 1
         output = host_outputs[0]
 
