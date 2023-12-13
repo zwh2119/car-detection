@@ -17,6 +17,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from car_detection_trt import CarDetection
 
+from log import LOGGER
+
 plugin_Library = 'libmyplugins.so'
 engine_file_path = 'yolov5s.engine'
 batch_size = 8
@@ -64,12 +66,12 @@ class ServiceServer:
             content.append(frame)
         os.remove(tmp_path)
         end = time.time()
-        print(f'decode time:{end - start}s')
+        LOGGER.debug(f'decode time:{end - start}s')
 
         start = time.time()
         result = await self.estimator(content)
         end = time.time()
-        print(f'process time:{end-start}s')
+        LOGGER.debug(f'process time:{end-start}s')
         assert type(result) is dict
 
         return result
