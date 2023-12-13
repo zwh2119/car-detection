@@ -1,13 +1,6 @@
 import os
-import random
 import shutil
 import time
-import contextlib
-import threading
-import asyncio
-import ctypes
-
-import base64
 
 import cv2
 from fastapi import FastAPI, UploadFile, File, Form
