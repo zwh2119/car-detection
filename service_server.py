@@ -17,6 +17,13 @@ engine_file_path = 'yolov5s.engine'
 batch_size = 8
 device = 0
 
+service_args = {
+            'weights': engine_file_path,
+            'plugin_library': plugin_Library,
+            'batch_size': batch_size,
+            'device': device
+        }
+
 class ServiceServer:
 
     def __init__(self):
@@ -29,12 +36,7 @@ class ServiceServer:
                      ),
         ], log_level='trace', timeout=6000)
 
-        self.estimator = CarDetection({
-            'weights': engine_file_path,
-            'plugin_library': plugin_Library,
-            'batch_size': batch_size,
-            'device': device
-        })
+        self.estimator = CarDetection(service_args)
 
         self.app.add_middleware(
             CORSMiddleware, allow_origins=["*"], allow_credentials=True,
