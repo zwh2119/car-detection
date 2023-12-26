@@ -57,17 +57,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libgl1-mesa-glx
 
-
-# 安装 python3 环境
-RUN apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    python3-dev \
-    python3-wheel &&\
-    cd /usr/local/bin &&\
-    ln -s /usr/bin/python3 python &&\
-    ln -s /usr/bin/pip3 pip; \
-
 RUN dpkg -i nv-tensorrt-repo-ubuntu1604-cuda10.2-trt8.0.1.6-ga-20210626_1-1_amd64.deb \
 cd /var/nv-tensorrt-repo-ubuntu1604-cuda10.2-trt8.0.1.6-ga-20210626 \
 dpkg -i libcudnn8_8.2.1.32-1+cuda10.2_amd64.deb \
@@ -87,6 +76,16 @@ dpkg -i python3-libnvinfer-dev_8.0.1-1+cuda10.2_amd64.deb \
 dpkg -i libnvinfer-samples_8.0.1-1+cuda10.2_all.deb \
 dpkg -i libnvinfer-doc_8.0.1-1+cuda10.2_all.deb \
 dpkg -i tensorrt_8.0.1.6-1+cuda10.2_amd64.deb
+
+# 安装 python3 环境
+RUN apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-dev \
+    python3-wheel &&\
+    cd /usr/local/bin &&\
+    ln -s /usr/bin/python3 python &&\
+    ln -s /usr/bin/pip3 pip; \
 
 
 
