@@ -66,7 +66,29 @@ RUN apt-get install -y --no-install-recommends \
     python3-wheel &&\
     cd /usr/local/bin &&\
     ln -s /usr/bin/python3 python &&\
-    ln -s /usr/bin/pip3 pip;
+    ln -s /usr/bin/pip3 pip; \
+
+RUN dpkg -i nv-tensorrt-repo-ubuntu1604-cuda10.2-trt8.0.1.6-ga-20210626_1-1_amd64.deb \
+cd /var/nv-tensorrt-repo-ubuntu1604-cuda10.2-trt8.0.1.6-ga-20210626 \
+dpkg -i libcudnn8_8.2.1.32-1+cuda10.2_amd64.deb \
+dpkg -i libcudnn8-dev_8.2.1.32-1+cuda10.2_amd64.deb \
+dpkg -i libnvinfer8_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvinfer-dev_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvinfer-plugin8_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvinfer-plugin-dev_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvonnxparsers8_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvonnxparsers-dev_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i onnx-graphsurgeon_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvparsers8_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvparsers-dev_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvinfer-bin_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i python3-libnvinfer_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i python3-libnvinfer-dev_8.0.1-1+cuda10.2_amd64.deb \
+dpkg -i libnvinfer-samples_8.0.1-1+cuda10.2_all.deb \
+dpkg -i libnvinfer-doc_8.0.1-1+cuda10.2_all.deb \
+dpkg -i tensorrt_8.0.1.6-1+cuda10.2_amd64.deb
+
+
 
 # 安装 TensorRT
 RUN cd /tmp && sudo apt-get update
