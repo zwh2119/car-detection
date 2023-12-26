@@ -3,6 +3,7 @@ import shutil
 import time
 
 import cv2
+import uvicorn
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.routing import APIRoute
 from starlette.responses import JSONResponse
@@ -18,11 +19,12 @@ batch_size = 8
 device = 0
 
 service_args = {
-            'weights': engine_file_path,
-            'plugin_library': plugin_Library,
-            'batch_size': batch_size,
-            'device': device
-        }
+    'weights': engine_file_path,
+    'plugin_library': plugin_Library,
+    'batch_size': batch_size,
+    'device': device
+}
+
 
 class ServiceServer:
 
@@ -66,7 +68,7 @@ class ServiceServer:
         start = time.time()
         result = await self.estimator(content)
         end = time.time()
-        LOGGER.debug(f'process time:{end-start}s')
+        LOGGER.debug(f'process time:{end - start}s')
         assert type(result) is dict
 
         return result
