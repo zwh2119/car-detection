@@ -18,11 +18,13 @@ ARG OS_VERSION=20.04
 
 # 从nvidia 官方镜像库拉取基础镜像
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn${CUDNN_VERSION}-devel-ubuntu${OS_VERSION}
-LABEL maintainer="nietaiyang"
+MAINTAINER Wenhui Zhou
 
 # ENV TRT_VERSION 7.2.3.4
 # ENV TRT_VERSION 7.0.0.11
 ENV TRT_VERSION 8.2.1.8
+
+ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c"]
 
 
