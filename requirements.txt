@@ -3,3 +3,4 @@ colorlog
 numpy
 pycuda
 tensorrt
+uvicorn
