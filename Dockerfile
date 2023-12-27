@@ -1,5 +1,5 @@
-ARG TENSORRT="8"
-ARG CUDA="11"
+ARG TENSORRT="8.2"
+ARG CUDA="11.2"
 
 FROM hakuyyf/tensorrtx:trt${TENSORRT}_cuda${CUDA}
 MAINTAINER Wenhui Zhou
