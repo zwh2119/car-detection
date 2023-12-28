@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-ARG CUDA_VERSION=11.4.1
+ARG CUDA_VERSION=11.4.3
 
 # Multi-arch container support available in non-cudnn containers.
 FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu20.04
