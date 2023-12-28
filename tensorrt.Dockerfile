@@ -15,21 +15,27 @@
 # limitations under the License.
 #
 
-ARG CUDA_VERSION=11.4.3
+ARG CUDA_VERSION=12.1.1
 
-# Multi-arch container support available in non-cudnn containers.
-FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu20.04
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04
 LABEL maintainer="NVIDIA CORPORATION"
 
-ENV TRT_VERSION 8.5.2
-ENV DEBIAN_FRONTEND=noninteractive
+ENV TRT_VERSION 8.6.1.6
+SHELL ["/bin/bash", "-c"]
 
+# Setup user account
 ARG uid=1000
 ARG gid=1000
 RUN groupadd -r -f -g ${gid} trtuser && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash trtuser
 RUN usermod -aG sudo trtuser
 RUN echo 'trtuser:nvidia' | chpasswd
 RUN mkdir -p /workspace && chown trtuser /workspace
+
+# Required to build Ubuntu 20.04 without user prompts with DLFW container
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update CUDA signing key
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
 
 # Install requried libraries
 RUN apt-get update && apt-get install -y software-properties-common
@@ -39,23 +45,62 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     git \
     pkg-config \
-    python3 \
-    python3-pip \
-    python3-dev \
-    python3-wheel \
     sudo \
     ssh \
+    libssl-dev \
     pbzip2 \
     pv \
     bzip2 \
     unzip \
+    devscripts \
+    lintian \
+    fakeroot \
+    dh-make \
     build-essential
 
-RUN cd /usr/local/bin &&\
+# Install python3
+RUN apt-get install -y --no-install-recommends \
+      python3 \
+      python3-pip \
+      python3-dev \
+      python3-wheel &&\
+    cd /usr/local/bin &&\
     ln -s /usr/bin/python3 python &&\
-    ln -s /usr/bin/pip3 pip
+    ln -s /usr/bin/pip3 pip;
+
+# Install TensorRT
+RUN if [ "${CUDA_VERSION}" = "10.2" ] ; then \
+    v="${TRT_VERSION%.*}-1+cuda${CUDA_VERSION}" &&\
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub &&\
+    apt-get update &&\
+    sudo apt-get install libnvinfer8=${v} libnvonnxparsers8=${v} libnvparsers8=${v} libnvinfer-plugin8=${v} \
+        libnvinfer-dev=${v} libnvonnxparsers-dev=${v} libnvparsers-dev=${v} libnvinfer-plugin-dev=${v} \
+        python3-libnvinfer=${v} libnvinfer-dispatch8=${v} libnvinfer-dispatch-dev=${v} libnvinfer-lean8=${v} \
+        libnvinfer-lean-dev=${v} libnvinfer-vc-plugin8=${v} libnvinfer-vc-plugin-dev=${v} \
+        libnvinfer-headers-dev=${v} libnvinfer-headers-plugin-dev=${v}; \
+else \
+    ver="${CUDA_VERSION%.*}" &&\
+    if [ "${ver%.*}" = "12" ] ; then \
+        ver="12.0"; \
+    fi &&\
+    v="${TRT_VERSION}-1+cuda${ver}" &&\
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub &&\
+    apt-get update &&\
+    sudo apt-get -y install libnvinfer8=${v} libnvonnxparsers8=${v} libnvparsers8=${v} libnvinfer-plugin8=${v} \
+        libnvinfer-dev=${v} libnvonnxparsers-dev=${v} libnvparsers-dev=${v} libnvinfer-plugin-dev=${v} \
+        python3-libnvinfer=${v} libnvinfer-dispatch8=${v} libnvinfer-dispatch-dev=${v} libnvinfer-lean8=${v} \
+        libnvinfer-lean-dev=${v} libnvinfer-vc-plugin8=${v} libnvinfer-vc-plugin-dev=${v} \
+        libnvinfer-headers-dev=${v} libnvinfer-headers-plugin-dev=${v}; \
+fi
+
+# Install PyPI packages
 RUN pip3 install --upgrade pip
 RUN pip3 install setuptools>=41.0.0
+#COPY requirements.txt /tmp/requirements.txt
+#RUN pip3 install -r /tmp/requirements.txt
+#RUN pip3 install jupyter jupyterlab
+# Workaround to remove numpy installed with tensorflow
+#RUN pip3 install --upgrade numpy
 
 # Install Cmake
 RUN cd /tmp && \
@@ -64,70 +109,14 @@ RUN cd /tmp && \
     ./cmake-3.14.4-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir --skip-license && \
     rm ./cmake-3.14.4-Linux-x86_64.sh
 
-# Skip installing PyPI packages and NGC client on cross-build container
-
-COPY docker/jetpack_files /pdk_files
-COPY scripts/stubify.sh /pdk_files
-
-# Update CUDA signing keys
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
-
-# Install CUDA cross compile toolchain
-RUN dpkg -i /pdk_files/cuda-repo-cross-aarch64*.deb /pdk_files/cuda-repo-ubuntu*_amd64.deb \
-    && cp /var/cuda-repo-cross*/cuda-*-keyring.gpg /usr/share/keyrings/ \
-    && cp /var/cuda-repo-ubuntu*/cuda-*-keyring.gpg /usr/share/keyrings/ \
-    && apt-get update \
-    && apt-get install -y cuda-cross-aarch64 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Unpack cudnn
-RUN  dpkg -x /pdk_files/cudnn-local-tegra-repo*.deb /pdk_files/cudnn_extract \
-    && dpkg -x /pdk_files/cudnn_extract/var/cudnn-local-tegra-repo*/libcudnn[7-8]_*-1+cuda11.[0-9]_arm64.deb /pdk_files/cudnn \
-    && dpkg -x /pdk_files/cudnn_extract/var/cudnn-local-tegra-repo*/libcudnn[7-8]-dev_*-1+cuda11.[0-9]_arm64.deb /pdk_files/cudnn \
-    && cd /pdk_files/cudnn/usr/lib/aarch64-linux-gnu \
-    && cd /pdk_files/cudnn \
-    && ln -s usr/include/aarch64-linux-gnu include \
-    && ln -s usr/lib/aarch64-linux-gnu lib \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_adv_infer_v[7-9].h /usr/include/cudnn_adv_infer.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_adv_train_v[7-9].h /usr/include/cudnn_adv_train.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_backend_v[7-9].h /usr/include/cudnn_backend.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_cnn_infer_v[7-9].h /usr/include/cudnn_cnn_infer.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_cnn_train_v[7-9].h /usr/include/cudnn_cnn_train.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_ops_infer_v[7-9].h /usr/include/cudnn_ops_infer.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_ops_train_v[7-9].h /usr/include/cudnn_ops_train.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_v[7-9].h /usr/include/cudnn.h \
-    && ln -s /pdk_files/cudnn/usr/include/aarch64-linux-gnu/cudnn_version_v[7-9].h /usr/include/cudnn_version.h
-
-# Unpack libnvinfer
-RUN dpkg -x /pdk_files/nv-tensorrt-local-repo-l4t-[0-8].[0-9].[0-9]-cuda-11.[0-9]_*_arm64.deb /pdk_files/tensorrt
-RUN mv /pdk_files/tensorrt/var/nv-tensorrt-local-repo-l4t-[0-8].[0-9].[0-9]-cuda-11.[0-9]/*.deb /pdk_files
-RUN dpkg -x /pdk_files/libnvinfer[0-8]_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvinfer-dev_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvparsers[6-8]_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvparsers-dev_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvinfer-plugin[6-8]_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvinfer-plugin-dev_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvonnxparsers[6-8]_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt \
-    && dpkg -x /pdk_files/libnvonnxparsers-dev_*-1+cuda11.[0-9]_arm64.deb /pdk_files/tensorrt
-
-# Clean up debs
-RUN rm -rf /pdk_files/*.deb
-
-# create stub libraries
-RUN cd /pdk_files/tensorrt \
-    && ln -s usr/include/aarch64-linux-gnu include \
-    && ln -s usr/lib/aarch64-linux-gnu lib \
-    && cd lib \
-    && mkdir stubs \
-    && for x in nvinfer nvparsers nvinfer_plugin nvonnxparser; \
-       do                                                     \
-            CC=aarch64-linux-gnu-gcc /pdk_files/stubify.sh lib${x}.so stubs/lib${x}.so \
-       ; done
+# Download NGC client
+RUN cd /usr/local/bin && wget https://ngc.nvidia.com/downloads/ngccli_cat_linux.zip && unzip ngccli_cat_linux.zip && chmod u+x ngc-cli/ngc && rm ngccli_cat_linux.zip ngc-cli.md5 && echo "no-apikey\nascii\n" | ngc-cli/ngc config set
 
 # Set environment and working directory
-ENV TRT_LIBPATH /pdk_files/tensorrt/lib
+ENV TRT_LIBPATH /usr/lib/x86_64-linux-gnu
 ENV TRT_OSSPATH /workspace/TensorRT
+ENV PATH="${PATH}:/usr/local/bin/ngc-cli"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TRT_OSSPATH}/build/out:${TRT_LIBPATH}"
 WORKDIR /workspace
 
 USER trtuser
