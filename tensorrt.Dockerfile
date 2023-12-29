@@ -15,12 +15,12 @@
 # limitations under the License.
 #
 
-ARG CUDA_VERSION=11.7.1
+ARG CUDA_VERSION=11.6.1
 
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04
 LABEL maintainer="NVIDIA CORPORATION"
 
-ENV TRT_VERSION 8.6.1.6
+ENV TRT_VERSION 8.4.2.4
 SHELL ["/bin/bash", "-c"]
 
 # Setup user account
