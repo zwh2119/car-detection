@@ -1,5 +1,5 @@
 
-FROM onecheck/tensorrt:trt8_arm64
+FROM onecheck/tensorrt:trt8_aarch64
 MAINTAINER Wenhui Zhou
 
 COPY ./requirements.txt ./
