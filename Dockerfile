@@ -1,5 +1,5 @@
 
-FROM onecheck/tensorrt:trt8_amd64
+FROM yuefan2022/tensorrt-ubuntu20.04-cuda11.6
 MAINTAINER Wenhui Zhou
 
 COPY ./requirements.txt ./
