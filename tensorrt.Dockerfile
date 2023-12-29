@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-ARG CUDA_VERSION=12.1.1
+ARG CUDA_VERSION=11.6.1
 
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-ubuntu20.04
 LABEL maintainer="NVIDIA CORPORATION"
