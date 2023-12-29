@@ -1,7 +1,5 @@
-ARG TENSORRT="8.2"
-ARG CUDA="11.2"
 
-FROM hakuyyf/tensorrtx:trt${TENSORRT}_cuda${CUDA}
+FROM onecheck/tensorrt:trt8_amd64
 MAINTAINER Wenhui Zhou
 
 COPY ./requirements.txt ./
