@@ -8,7 +8,6 @@ RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 # TODO：libmyplugins.so yolov5s.engine will be removed in later version
 
 COPY car_detection_trt.py service_server.py log.py     ./
-COPY  libmyplugins.so ./
-COPY /yolov5s.engine ./
+COPY  libmyplugins.so yolov5s.engine ./
 
 CMD ["uvicorn", "service_server:app", "--host=0.0.0.0", "--port=9001", "--log-level=debug", "--workers=2", "--limit-concurrency=3"]
