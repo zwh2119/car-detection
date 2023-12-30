@@ -6,5 +6,4 @@ tensorrt
 uvicorn
 fastapi
 starlette
-typing_extensions==4.8.0
 python-multipart
