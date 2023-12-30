@@ -3,7 +3,7 @@ FROM ngaurav07/tx2:0.6
 MAINTAINER Wenhui Zhou
 
 COPY ./requirements.txt ./
-RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 COPY car_detection_trt.py service_server.py log.py ./
 
