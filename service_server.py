@@ -13,8 +13,8 @@ from car_detection_trt import CarDetection
 
 from log import LOGGER
 
-plugin_Library = 'lib/libmyplugins.so'
-engine_file_path = 'lib/yolov5s.engine'
+plugin_Library = '/app/lib/libmyplugins.so'
+engine_file_path = '/app/lib/yolov5s.engine'
 batch_size = 8
 device = 0
 
