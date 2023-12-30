@@ -2,6 +2,8 @@
 FROM ngaurav07/tx2:0.6
 MAINTAINER Wenhui Zhou
 
+RUN pip3 install --upgrade pip
+
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
