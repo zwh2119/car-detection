@@ -1,3 +1,4 @@
+opencv-python
 colorlog
 numpy
 pycuda
