@@ -1,5 +1,5 @@
 
-FROM ngaurav07/tx2:0.6
+FROM hwkypgils/tensorrt:32.5.1-t194
 MAINTAINER Wenhui Zhou
 
 RUN pip3 install --upgrade pip
