@@ -1,5 +1,5 @@
 
-FROM nvcr.io/nvidia/l4t-jetpack:r35.4.1
+FROM nvcr.io/nvidia/l4t-jetpack:r35.3.1
 MAINTAINER Wenhui Zhou
 
 RUN pip3 install --upgrade pip
