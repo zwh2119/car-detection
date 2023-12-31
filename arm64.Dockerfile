@@ -2,6 +2,16 @@
 FROM nvcr.io/nvidia/l4t-jetpack:r35.3.1
 MAINTAINER Wenhui Zhou
 
+# Install python3
+RUN apt-get install -y --no-install-recommends \
+      python3 \
+      python3-pip \
+      python3-dev \
+      python3-wheel &&\
+    cd /usr/local/bin &&\
+    ln -s /usr/bin/python3 python &&\
+    ln -s /usr/bin/pip3 pip;
+
 RUN pip3 install --upgrade pip
 
 COPY ./requirements.txt ./
