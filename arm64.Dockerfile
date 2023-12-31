@@ -2,6 +2,27 @@
 FROM nvcr.io/nvidia/l4t-jetpack:r35.3.1
 MAINTAINER Wenhui Zhou
 
+# Install requried libraries
+RUN apt-get update && apt-get install -y software-properties-common
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-openssl-dev \
+    wget \
+    git \
+    pkg-config \
+    sudo \
+    ssh \
+    libssl-dev \
+    pbzip2 \
+    pv \
+    bzip2 \
+    unzip \
+    devscripts \
+    lintian \
+    fakeroot \
+    dh-make \
+    build-essential
+
 # Install python3
 RUN apt-get install -y --no-install-recommends \
       python3 \
