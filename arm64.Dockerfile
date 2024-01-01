@@ -3,7 +3,8 @@ FROM hwkypgils/tensorrt:32.5.1-t194
 MAINTAINER Wenhui Zhou
 
 # Install requried libraries
-RUN apt-get update && apt-get install -y software-properties-common
+RUN apt-get update && apt-get install -y software-properties-common  \
+    && apt-get install -y python-setuptools
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
