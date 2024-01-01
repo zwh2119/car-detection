@@ -2,37 +2,6 @@
 FROM cdsnlab/tensorrtx:arm64
 MAINTAINER Wenhui Zhou
 
-# Install requried libraries
-RUN apt-get update && apt-get install -y software-properties-common  \
-    && apt-get install -y python-setuptools
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcurl4-openssl-dev \
-    wget \
-    git \
-    pkg-config \
-    sudo \
-    ssh \
-    libssl-dev \
-    pbzip2 \
-    pv \
-    bzip2 \
-    unzip \
-    devscripts \
-    lintian \
-    fakeroot \
-    dh-make \
-    build-essential
-
-# Install python3
-RUN apt-get install -y --no-install-recommends \
-      python3 \
-      python3-pip \
-      python3-dev \
-      python3-wheel &&\
-    cd /usr/local/bin &&\
-    ln -s /usr/bin/python3 python &&\
-    ln -s /usr/bin/pip3 pip;
 
 RUN pip3 install --upgrade pip
 
