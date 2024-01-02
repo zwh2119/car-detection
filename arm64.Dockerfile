@@ -7,6 +7,7 @@ ENV export LANG=C.UTF-8
 
 RUN pip3 install --upgrade pip
 
+RUN pip3 install click==8.0.4 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
