@@ -2,11 +2,11 @@
 FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
 MAINTAINER Wenhui Zhou
 
+RUN apt-get update && apt-get install -y epel-release
 RUN export LC_ALL=en_US.utf-8 && export LANG=en_US.utf-8
 
 RUN pip3 install --upgrade pip
 
-RUN pip3 uninstall -y  click
 
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
