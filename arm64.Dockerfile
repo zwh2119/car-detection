@@ -6,6 +6,8 @@ RUN export LC_ALL=en_US.utf-8 && export LANG=en_US.utf-8
 
 RUN pip3 install --upgrade pip
 
+RUN pip3 uninstall click
+
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
