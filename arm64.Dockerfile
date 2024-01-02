@@ -5,6 +5,8 @@ MAINTAINER Wenhui Zhou
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/3bf863cc.pub
+
 RUN apt-get update &&  apt-get install -y cuda-toolkit-10-2
 
 RUN pip3 install --upgrade pip
