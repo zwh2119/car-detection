@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y gnupg
 
 RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/3bf863cc.pub
 
-RUN apt-get update &&  apt-get install -y cuda-toolkit-10-2
+RUN apt-get update &&  apt-get install -y cuda-10-2
 
 RUN pip3 install --upgrade pip
 
