@@ -1,5 +1,5 @@
 
-FROM cdsnlab/tensorrtx:arm64
+FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
 MAINTAINER Wenhui Zhou
 
 
