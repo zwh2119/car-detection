@@ -2,7 +2,7 @@
 colorlog
 numpy
 pycuda
-tensorrt
+
 uvicorn
 fastapi
 starlette
