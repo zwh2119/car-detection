@@ -2,7 +2,8 @@
 FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
 MAINTAINER Wenhui Zhou
 
-RUN export LC_ALL=C.UTF-8  && export LANG=C.UTF-8 && python3 -m spacy download en_core_web_sm
+ENV export LC_ALL=C.UTF-8
+ENV export LANG=C.UTF-8
 
 RUN pip3 install --upgrade pip
 
