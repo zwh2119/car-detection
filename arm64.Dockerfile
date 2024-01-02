@@ -2,8 +2,7 @@
 FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
 MAINTAINER Wenhui Zhou
 
-RUN apt-get update && apt-get install -y epel-release
-RUN export LC_ALL=en_US.utf-8 && export LANG=en_US.utf-8
+RUN export LC_ALL=C.UTF-8  && export LANG=C.UTF-8 && python3 -m spacy download en_core_web_sm
 
 RUN pip3 install --upgrade pip
 
