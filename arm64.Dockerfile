@@ -11,8 +11,8 @@ RUN pip3 install --upgrade pip
 
 RUN pip3 install click==8.0.4 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN pip3 install tensorrt_libs==9.0.0.post11.dev1
-RUN pip3 install tensorrt
+#RUN pip3 install tensorrt_libs==9.0.0.post11.dev1
+#RUN pip3 install tensorrt
 
 COPY ./requirements.txt ./
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
