@@ -5,6 +5,8 @@ MAINTAINER Wenhui Zhou
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
+RUN apt-get update && sudo apt-get install -y cuda-toolkit-10-2
+
 RUN pip3 install --upgrade pip
 
 RUN pip3 install click==8.0.4 -i https://pypi.tuna.tsinghua.edu.cn/simple
