@@ -2,8 +2,8 @@
 FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
 MAINTAINER Wenhui Zhou
 
-ENV export LC_ALL=C.UTF-8
-ENV export LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 RUN pip3 install --upgrade pip
 
