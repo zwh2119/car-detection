@@ -1,19 +1,4 @@
-#
-# SPDX-FileCopyrightText: Copyright (c) 1993-2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+
 
 ARG CUDA_VERSION=10.2
 
@@ -60,20 +45,37 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dh-make \
     build-essential
 
+RUN update-binfmts --enable
 
-# Install TensorRT. This will also pull in CUDNN
-RUN ver="${CUDA_VERSION%.*}" &&\
-    if [ "${ver%.*}" = "12" ] ; then \
-        ver="12.0"; \
-    fi &&\
-    v="${TRT_VERSION}-1+cuda${ver}" &&\
-    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/3bf863cc.pub &&\
-    apt-get update &&\
-    sudo apt-get -y install libnvinfer8=${v} libnvonnxparsers8=${v} libnvparsers8=${v} libnvinfer-plugin8=${v} \
-        libnvinfer-dev=${v} libnvonnxparsers-dev=${v} libnvparsers-dev=${v} libnvinfer-plugin-dev=${v} \
-        python3-libnvinfer=${v} libnvinfer-dispatch8=${v} libnvinfer-dispatch-dev=${v} libnvinfer-lean8=${v} \
-        libnvinfer-lean-dev=${v} libnvinfer-vc-plugin8=${v} libnvinfer-vc-plugin-dev=${v} \
-        libnvinfer-headers-dev=${v} libnvinfer-headers-plugin-dev=${v};
+RUN     dpkg -i libnvinfer8_8.2.1-1+cuda10.2_arm64.deb  \
+     && dpkg -i libnvinfer-bin_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i libnvinfer-doc_8.2.1-1+cuda10.2_all.deb \
+     && dpkg -i libnvinfer-plugin8_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i libnvinfer-plugin-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i libnvinfer-samples_8.2.1-1+cuda10.2_all.deb  \
+     && dpkg -i libnvonnxparsers8_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i libnvonnxparsers-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i libnvparsers8_8.2.1-1+cuda10.2_arm64.deb   \
+     && dpkg -i libnvparsers-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i graphsurgeon-tf_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i uff-converter-tf_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i python3-libnvinfer_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i python3-libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i tensorrt_8.2.1.9-1+cuda10.2_arm64.deb \
+     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-dev.deb \
+     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-libs.deb \
+     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-licenses.deb \
+     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-python.deb \
+     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-samples.deb  \
+     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-dev.deb   \
+     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-libs.deb  \
+     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-licenses.deb \
+     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-python.deb \
+     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-samples.deb
+
+
+
 
 # Install Cmake
 RUN cd /tmp && \
