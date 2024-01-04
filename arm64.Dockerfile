@@ -1,5 +1,5 @@
 
-FROM dustynv/tensorrt:8.6-r36.2.0
+FROM  cdsnlab/tensorrtx:arm64
 MAINTAINER Wenhui Zhou
 
 ENV LC_ALL=C.UTF-8
