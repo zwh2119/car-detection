@@ -18,7 +18,7 @@
 ARG CUDA_VERSION=10.2
 
 # Multi-arch container support available in non-cudnn containers.
-FROM sirfragalot/cuda-jetpack:4.6.1-runtime
+FROM  samuelwei/cuda10.2-pytorch1.5:laste
 
 ENV TRT_VERSION 8.6.1.6
 SHELL ["/bin/bash", "-c"]
