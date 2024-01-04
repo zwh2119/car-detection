@@ -18,7 +18,7 @@
 ARG CUDA_VERSION=10.2
 
 # Multi-arch container support available in non-cudnn containers.
-FROM nvcr.io/nvidia/l4t-base:r32.6.1
+FROM sirfragalot/cuda-jetpack:4.6.1-runtime
 
 ENV TRT_VERSION 8.6.1.6
 SHELL ["/bin/bash", "-c"]
