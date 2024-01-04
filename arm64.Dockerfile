@@ -1,5 +1,5 @@
 
-FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
+FROM dustynv/tensorrt:8.6-r36.2.0
 MAINTAINER Wenhui Zhou
 
 ENV LC_ALL=C.UTF-8
@@ -7,13 +7,7 @@ ENV LANG=C.UTF-8
 
 RUN apt-get update && apt-get install -y gnupg
 
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/sbsa/3bf863cc.pub
-
-RUN apt-get update &&  apt-get install -y cuda-10-2
-
 RUN pip3 install --upgrade pip
-
-RUN pip3 install click==8.0.4 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 #RUN pip3 install tensorrt_libs==9.0.0.post11.dev1
 #RUN pip3 install tensorrt
