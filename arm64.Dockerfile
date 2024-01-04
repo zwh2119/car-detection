@@ -1,5 +1,5 @@
 
-FROM  cdsnlab/tensorrtx:arm64
+FROM louiswe/tensorrt-yolo:latest
 MAINTAINER Wenhui Zhou
 
 ENV LC_ALL=C.UTF-8
