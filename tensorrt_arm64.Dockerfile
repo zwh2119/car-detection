@@ -19,6 +19,8 @@ RUN mkdir -p /workspace && chown trtuser /workspace
 # Required to build Ubuntu 20.04 without user prompts with DLFW container
 ENV DEBIAN_FRONTEND=noninteractive
 
+COPY lib /pdk_files
+
 RUN apt-get update && apt-get install -y gnupg
 
 # Update CUDA signing key
@@ -47,32 +49,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN update-binfmts --enable
 
-RUN     dpkg -i libnvinfer8_8.2.1-1+cuda10.2_arm64.deb  \
-     && dpkg -i libnvinfer-bin_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i libnvinfer-doc_8.2.1-1+cuda10.2_all.deb \
-     && dpkg -i libnvinfer-plugin8_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i libnvinfer-plugin-dev_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i libnvinfer-samples_8.2.1-1+cuda10.2_all.deb  \
-     && dpkg -i libnvonnxparsers8_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i libnvonnxparsers-dev_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i libnvparsers8_8.2.1-1+cuda10.2_arm64.deb   \
-     && dpkg -i libnvparsers-dev_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i graphsurgeon-tf_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i uff-converter-tf_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i python3-libnvinfer_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i python3-libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
-     && dpkg -i tensorrt_8.2.1.9-1+cuda10.2_arm64.deb \
-     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-dev.deb \
-     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-libs.deb \
-     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-licenses.deb \
-     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-python.deb \
-     && dpkg -i OpenCV-4.1.1-2-gd5a58aa75-aarch64-samples.deb  \
-     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-dev.deb   \
-     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-libs.deb  \
-     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-licenses.deb \
-     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-python.deb \
-     && dpkg -i OpenCV-4.5.4-8-g3e4c170df4-aarch64-samples.deb
+RUN     dpkg -i /pdk_files/libnvinfer8_8.2.1-1+cuda10.2_arm64.deb  \
+     && dpkg -i /pdk_files/libnvinfer-bin_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/libnvinfer-doc_8.2.1-1+cuda10.2_all.deb \
+     && dpkg -i /pdk_files/libnvinfer-plugin8_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/libnvinfer-plugin-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/libnvinfer-samples_8.2.1-1+cuda10.2_all.deb  \
+     && dpkg -i /pdk_files/libnvonnxparsers8_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/libnvonnxparsers-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/libnvparsers8_8.2.1-1+cuda10.2_arm64.deb   \
+     && dpkg -i /pdk_files/libnvparsers-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/graphsurgeon-tf_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/uff-converter-tf_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/python3-libnvinfer_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/python3-libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/tensorrt_8.2.1.9-1+cuda10.2_arm64.deb \
+     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-dev.deb \
+     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-libs.deb \
+     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-licenses.deb \
+     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-python.deb \
+     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-samples.deb  \
+     && dpkg -i /pdk_files/OpenCV-4.5.4-8-g3e4c170df4-aarch64-dev.deb   \
+     && dpkg -i /pdk_files/OpenCV-4.5.4-8-g3e4c170df4-aarch64-libs.deb  \
+     && dpkg -i /pdk_files/OpenCV-4.5.4-8-g3e4c170df4-aarch64-licenses.deb \
+     && dpkg -i /pdk_files/OpenCV-4.5.4-8-g3e4c170df4-aarch64-python.deb \
+     && dpkg -i /pdk_files/OpenCV-4.5.4-8-g3e4c170df4-aarch64-samples.deb
 
 
 
