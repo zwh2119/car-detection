@@ -1,5 +1,5 @@
 
-FROM louiswe/tensorrt-yolo:latest
+FROM adrianosantospb/tensorrt-pytorch-opencv-arm64:latest
 MAINTAINER Wenhui Zhou
 
 ENV LC_ALL=C.UTF-8
