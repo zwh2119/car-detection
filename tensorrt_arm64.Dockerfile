@@ -19,7 +19,7 @@ RUN mkdir -p /workspace && chown trtuser /workspace
 # Required to build Ubuntu 20.04 without user prompts with DLFW container
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY lib /pdk_files
+COPY car_detection/lib /pdk_files
 
 RUN apt-get update && apt-get install -y gnupg
 
