@@ -57,8 +57,9 @@ RUN mv /var/lib/dpkg/info /var/lib/dpkg/info.bak && mkdir /var/lib/dpkg/info
 RUN apt-get -y update
 
 RUN apt-get -y update
-RUN  dpkg -r --force-all cuda-misc-headers-10-2
-RUN apt-get -y install -f cuda
+
+RUN apt-get -y install -f cuda-cudart-dev-10-2
+RUN apt-get -y install -f cuda-toolkit-10-2
 
 RUN     dpkg -i /pdk_files/libcudnn8_8.2.1.32-1+cuda10.2_arm64.deb \
      && dpkg -i /pdk_files/libcudnn8-dev_8.2.1.32-1+cuda10.2_arm64.deb \
