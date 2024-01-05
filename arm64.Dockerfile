@@ -2,6 +2,8 @@
 FROM  onecheck/tensorrt:trt8_aarch64
 MAINTAINER Wenhui Zhou
 
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 RUN pip3 install --upgrade pip
 
