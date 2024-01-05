@@ -54,10 +54,11 @@ RUN     dpkg -i /pdk_files/libcudnn8_8.2.1.32-1+cuda10.2_arm64.deb \
      && dpkg -i /pdk_files/python3-libnvinfer_8.2.1-1+cuda10.2_arm64.deb \
      && dpkg -i /pdk_files/python3-libnvinfer-dev_8.2.1-1+cuda10.2_arm64.deb \
      && dpkg -i /pdk_files/tensorrt_8.2.1.9-1+cuda10.2_arm64.deb \
-     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-libs.deb \
-     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-dev.deb \
-     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-samples.deb  \
-     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-licenses.deb \
-     && dpkg -i /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-python.deb \
+RUN apt-get -y update && apt-get -y -f install \
+     && apt-get install -y  /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-libs.deb \
+     && apt-get install -y /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-dev.deb \
+     && apt-get install -y /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-samples.deb  \
+     && apt-get install -y /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-licenses.deb \
+     && apt-get install -y /pdk_files/OpenCV-4.1.1-2-gd5a58aa75-aarch64-python.deb
 
 RUN ["/bin/bash"]
