@@ -32,7 +32,7 @@ RUN dpkg -i /pdk_files/cuda-repo-l4t-10-2-local_10.2.460-1_arm64.deb \
     && apt-get -y update \
     && mv /var/lib/dpkg/info /var/lib/dpkg/info.bak && mkdir /var/lib/dpkg/info \
     && apt-get upgrade \
-    && apt-get -f install \
+    && apt-get -f -y install \
     && apt-get -y install cuda-toolkit-10-2
 
 RUN     dpkg -i /pdk_files/libcudnn8_8.2.1.32-1+cuda10.2_arm64.deb \
