@@ -27,13 +27,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN apt-get --purge remove  cuda*
 
-RUN dpkg -i /pdk_files/cuda-repo-l4t-10-2-local_10.2.460-1_arm64.deb \
-    && apt-key add /var/cuda-repo*/*.pub \
-    && apt-get -y update \
-    && mv /var/lib/dpkg/info /var/lib/dpkg/info.bak && mkdir /var/lib/dpkg/info \
-    && apt-get -y upgrade \
-    && apt-get -f -y install \
-    && apt-get -y install cuda-toolkit-10-2
+RUN dpkg -i /pdk_files/cuda-repo-l4t-10-2-local_10.2.460-1_arm64.deb
+RUN apt-key add /var/cuda-repo*/*.pub
+RUN apt-get -y update
+RUN mv /var/lib/dpkg/info /var/lib/dpkg/info.bak && mkdir /var/lib/dpkg/info
+RUN apt-get -y upgrade
+RUN apt-get -f -y install
+RUN apt-get -y install cuda-toolkit-10-2
 
 RUN     dpkg -i /pdk_files/libcudnn8_8.2.1.32-1+cuda10.2_arm64.deb \
      && dpkg -i /pdk_files/libcudnn8-dev_8.2.1.32-1+cuda10.2_arm64.deb \
