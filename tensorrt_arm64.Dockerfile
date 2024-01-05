@@ -27,6 +27,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN apt-get --purge remove  cuda*
 
+RUN apt-get update && apt-get install -y software-properties-common
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcurl4-openssl-dev \
+    wget \
+    git \
+    pkg-config \
+    sudo \
+    ssh \
+    libssl-dev \
+    pbzip2 \
+    pv \
+    bzip2 \
+    unzip \
+    devscripts \
+    lintian \
+    fakeroot \
+    dh-make \
+    build-essential
+
+
 RUN dpkg -i /pdk_files/cuda-repo-l4t-10-2-local_10.2.460-1_arm64.deb
 RUN apt-key add /var/cuda-repo*/*.pub
 RUN apt-get -y update
