@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dh-make \
     build-essential
 
-RUN apt-get --purge remove cublas* cuda*
+RUN apt-get --purge remove  cuda*
 
 RUN dpkg -i /pdk_files/cuda-repo-l4t-10-2-local_10.2.460-1_arm64.deb \
     && apt-key add /var/cuda-repo*/*.pub \
