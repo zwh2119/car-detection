@@ -51,10 +51,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN dpkg -i /pdk_files/cuda-repo-l4t-10-2-local_10.2.460-1_arm64.deb
 RUN apt-key add /var/cuda-repo*/*.pub
 RUN apt-get -y update
+RUN apt-get -f -y install
 RUN mv /var/lib/dpkg/info /var/lib/dpkg/info.bak && mkdir /var/lib/dpkg/info
 #RUN apt-get -y upgrade
 RUN apt-get -y update
-RUN apt-get -f -y install
+
+RUN apt-get -y update
 RUN  dpkg -r --force-all cuda-misc-headers-10-2
 RUN apt-get -y install cuda-toolkit-10-2
 
