@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential
 
 RUN apt-get --purge remove  cuda*
+RUN rm -rf /usr/local/cuda*
 
 RUN apt-get update && apt-get install -y software-properties-common
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
