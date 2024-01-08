@@ -12,18 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from car_detection_trt import CarDetection
 
 from log import LOGGER
-
-plugin_Library = '/app/lib/libmyplugins.so'
-engine_file_path = '/app/lib/yolov5s.engine'
-batch_size = 8
-device = 0
-
-service_args = {
-    'weights': engine_file_path,
-    'plugin_library': plugin_Library,
-    'batch_size': batch_size,
-    'device': device
-}
+from config import Context
 
 
 class ServiceServer:
@@ -37,6 +26,18 @@ class ServiceServer:
 
                      ),
         ], log_level='trace', timeout=6000)
+
+        self.batch_size = 8
+        self.device = 0
+        self.plugin_Library = Context.get_file_path('libmyplugins.so')
+        self.engine_file_path = Context.get_file_path('yolov5s.engine')
+
+        service_args = {
+            'weights': self.engine_file_path,
+            'plugin_library': self.plugin_Library,
+            'batch_size': self.batch_size,
+            'device': self.device
+        }
 
         self.estimator = CarDetection(service_args)
 
